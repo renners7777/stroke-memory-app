@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.stroke"
+    namespace "com.strokeMemoryApp"
     defaultConfig {
-        applicationId "com.stroke"
+        applicationId "com.strokeMemoryApp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

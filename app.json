@@ -1,4 +1,34 @@
 {
-  "name": "StrokeMemoryApp",
-  "displayName": "StrokeMemoryApp"
+  "expo": {
+    "name": "StrokeMemoryApp",
+    "slug": "stroke-memory-app", // You should add a slug as well
+    "version": "1.0.0", // Add a version
+    "orientation": "portrait",
+    "icon": "./assets/icon.png", // Add a path to your app icon
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png", // Add a path to your splash screen image
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.strokememoryapp" // Replace with your bundle identifier
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png", // Add a path to your adaptive icon
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.yourcompany.strokememoryapp" // Replace with your package name
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png" // Add a path to your favicon
+    }
+  }
 }
+

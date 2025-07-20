@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "Stroke.app"
-               BlueprintName = "Stroke"
-               ReferencedContainer = "container:Stroke.xcodeproj">
+               BuildableName = "StrokeMemory.app"
+               BlueprintName = "StrokeMemory"
+               ReferencedContainer = "container:StrokeMemory.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "StrokeTests.xctest"
-               BlueprintName = "StrokeTests"
-               ReferencedContainer = "container:Stroke.xcodeproj">
+               BuildableName = "StrokeMemoryTests.xctest"
+               BlueprintName = "StrokeMemoryTests"
+               ReferencedContainer = "container:StrokeMemory.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Stroke.app"
-            BlueprintName = "Stroke"
-            ReferencedContainer = "container:Stroke.xcodeproj">
+            BuildableName = "StrokeMemory.app"
+            BlueprintName = "StrokeMemory"
+            ReferencedContainer = "container:StrokeMemory.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Stroke.app"
-            BlueprintName = "Stroke"
-            ReferencedContainer = "container:Stroke.xcodeproj">
+            BuildableName = "StrokeMemory.app"
+            BlueprintName = "StrokeMemory"
+            ReferencedContainer = "container:StrokeMemory.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
