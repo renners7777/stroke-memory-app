@@ -1,6 +1,7 @@
 import React from 'react';
+// Removed: import { View, Text, StyleSheet } from 'react-native'; // Already removed in previous step
 
-import firebase from '@react-native-firebase/app'; 
+import firebase from '@react-native-firebase/app';
 import {
   API_KEY,
   AUTH_DOMAIN,
@@ -17,6 +18,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Import your screens
 import ReminderListScreen from './src/screens/ReminderListScreen';
+import AddReminderScreen from './src/screens/AddReminderScreen'; // Import AddReminderScreen
 // Import other screens as you create them
 
 
@@ -48,21 +50,24 @@ const App = () => {
       <Stack.Navigator>
         {/* Define your screens */}
         <Stack.Screen
-          name="Reminders" // Name of the screen
-          component={ReminderListScreen} // The component to render
-          options={{ title: 'My Reminders' }} // Options for the screen (e.g., header title)
+          name="Reminders"
+          component={ReminderListScreen}
+          options={{ title: 'My Reminders' }}
+        />
+        {/* Add the AddReminderScreen to the stack */}
+        <Stack.Screen
+          name="AddReminder" // Name of the screen (matches the navigation.navigate call)
+          component={AddReminderScreen} // The component to render
+          options={{ title: 'Add Reminder' }} // Options for the header title
         />
         {/* Add other screens here as you create them */}
-        {/* <Stack.Screen name="AddReminder" component={AddReminderScreen} /> */}
         {/* <Stack.Screen name="Settings" component={SettingsScreen} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
-// You might still have some global styles, but most screen-specific styles
-// will be within the screen components themselves.
-
+// Removed: const styles = StyleSheet.create({...}); // Already removed in previous step
 
 
 export default App;
