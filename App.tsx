@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import firebase from '@react-native-firebase/app';
-// Import environment variables from @env
+
+import firebase from '@react-native-firebase/app'; 
 import {
   API_KEY,
   AUTH_DOMAIN,
@@ -11,6 +10,14 @@ import {
   APP_ID,
   MEASUREMENT_ID,
 } from '@env';
+
+// Import React Navigation components
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+// Import your screens
+import ReminderListScreen from './src/screens/ReminderListScreen';
+// Import other screens as you create them
 
 
 // Your Firebase project configuration
@@ -31,23 +38,31 @@ if (!firebase.apps.length) {
   firebase.app(); // if already initialized, use that one
 }
 
-// ... rest of your App component
+// Create a Stack Navigator
+const Stack = createNativeStackNavigator();
+
+
 const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Welcome to your Stroke Memory App!</Text>
-      {/* Your app's UI and components will go here */}
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {/* Define your screens */}
+        <Stack.Screen
+          name="Reminders" // Name of the screen
+          component={ReminderListScreen} // The component to render
+          options={{ title: 'My Reminders' }} // Options for the screen (e.g., header title)
+        />
+        {/* Add other screens here as you create them */}
+        {/* <Stack.Screen name="AddReminder" component={AddReminderScreen} /> */}
+        {/* <Stack.Screen name="Settings" component={SettingsScreen} /> */}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff', // Set a background color
-  },
-});
+// You might still have some global styles, but most screen-specific styles
+// will be within the screen components themselves.
+
+
 
 export default App;
