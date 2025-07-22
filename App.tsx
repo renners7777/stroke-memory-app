@@ -1,7 +1,6 @@
 import React from 'react';
-// Removed: import { View, Text, StyleSheet } from 'react-native'; // Already removed in previous step
-
 import firebase from '@react-native-firebase/app';
+
 import {
   API_KEY,
   AUTH_DOMAIN,
@@ -10,7 +9,6 @@ import {
   MESSAGING_SENDER_ID,
   APP_ID,
   MEASUREMENT_ID,
-  DATABASE_URL
 } from '@env';
 
 // Import React Navigation components
@@ -32,6 +30,7 @@ const firebaseConfig = {
   messagingSenderId: MESSAGING_SENDER_ID,
   appId: APP_ID,
   measurementId: MEASUREMENT_ID,
+  databaseURL: undefined
 };
 
 // Initialize Firebase
