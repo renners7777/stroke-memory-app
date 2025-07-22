@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native'; // Import TouchableOpacity
+import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
 import ReminderItem from '../components/ReminderItem';
 import firestore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import { useNavigation } from '@react-navigation/native';
 
 
 interface Reminder {
   id: string;
   text: string;
   time: string; // Or a Date type
-  completed: boolean; // Add a completed status field
+  completed: boolean;
   // Add other reminder properties as needed
 }
 
 const ReminderListScreen: React.FC = () => {
-  const navigation = useNavigation(); // Get navigation object
+  const navigation = useNavigation();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,8 +22,7 @@ const ReminderListScreen: React.FC = () => {
   useEffect(() => {
     const subscriber = firestore()
       .collection('reminders')
-      // Add queries here to filter or order reminders (e.g., by user ID, by date)
-      .orderBy('time') // Order by time, for example
+      .orderBy('time')
       .onSnapshot(querySnapshot => {
         const fetchedReminders: Reminder[] = [];
         querySnapshot.forEach(documentSnapshot => {
@@ -40,11 +39,10 @@ const ReminderListScreen: React.FC = () => {
         Alert.alert("Error", "Failed to fetch reminders.");
       });
 
-    // Unsubscribe from events when no longer in use
     return () => subscriber();
   }, []);
 
-  // Function to handle completing/uncompleting a reminder
+  // Function to handle toggling reminder completion
   const handleToggleCompleteReminder = async (reminderId: string, currentStatus: boolean) => {
     try {
       await firestore()
@@ -54,7 +52,6 @@ const ReminderListScreen: React.FC = () => {
           completed: !currentStatus,
           completedAt: !currentStatus ? firestore.FieldValue.serverTimestamp() : null,
         });
-      // UI will automatically update due to onSnapshot listener
     } catch (error) {
       console.error("Error toggling reminder completion: ", error);
       Alert.alert("Error", "Failed to update reminder status.");
@@ -63,7 +60,6 @@ const ReminderListScreen: React.FC = () => {
 
   // Function to navigate to the Add Reminder screen
   const goToAddReminder = () => {
-    // 'AddReminder' is the name of the screen in your navigator, which we'll define later
     navigation.navigate('AddReminder' as never);
   };
 
@@ -72,9 +68,23 @@ const ReminderListScreen: React.FC = () => {
     return <Text>Loading reminders...</Text>;
   }
 
+  // Add a placeholder message when there are no reminders
+  if (reminders.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Today's Reminders</Text>
+        <Text style={styles.noRemindersText}>No reminders yet. Tap + to add one.</Text>
+        <TouchableOpacity style={styles.addButton} onPress={goToAddReminder}>
+          <Text style={styles.addButtonText}>+ Add Reminder</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Today's Reminders</Text> {/* Updated title */}
+      <Text style={styles.title}>Today's Reminders</Text>
       <FlatList
         data={reminders}
         keyExtractor={(item) => item.id}
@@ -86,22 +96,9 @@ const ReminderListScreen: React.FC = () => {
         )}
       />
 
-      {/* Add the "+ Add Reminder" button */}
       <TouchableOpacity style={styles.addButton} onPress={goToAddReminder}>
         <Text style={styles.addButtonText}>+ Add Reminder</Text>
       </TouchableOpacity>
-
-      {/* Placeholder for Voice Command button */}
-      {/* <TouchableOpacity style={styles.voiceButton} onPress={() => { /* handle voice command */ /* }}>
-        <Text style={styles.voiceButtonText}>Voice Command</Text>
-      </TouchableOpacity> */}
-
-      {/* Placeholder for Caregiver Status */}
-      {/* <View style={styles.caregiverStatus}>
-        <Text>Caregiver Status:</Text>
-        <Text>- Reminders completed: ...</Text>
-        <TouchableOpacity><Text>Send Message</Text></TouchableOpacity>
-      </View> */}
 
     </View>
   );
@@ -118,6 +115,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  noRemindersText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 50,
+    color: '#666',
+  },
   addButton: {
     backgroundColor: '#007BFF',
     padding: 15,
@@ -130,7 +133,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  // Add styles for voice command and caregiver sections later
 });
 
 export default ReminderListScreen;
