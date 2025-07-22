@@ -10,6 +10,7 @@ import {
   MESSAGING_SENDER_ID,
   APP_ID,
   MEASUREMENT_ID,
+  DATABASE_URL
 } from '@env';
 
 // Import React Navigation components
