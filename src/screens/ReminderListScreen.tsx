@@ -33,8 +33,8 @@ const ReminderListScreen: React.FC = () => {
 
   // Fetch reminders from Firestore
   useEffect(() => {
-    const subscriber = (getPlatformSpecificFirestore as any) // Explicitly cast to any
-  .collection('reminders')
+    const subscriber = (getPlatformSpecificFirestore() as any) // Call the function directly
+      .collection('reminders')
       .orderBy('time')
       .onSnapshot(
         (querySnapshot: QuerySnapshot) => { // Add type annotation
@@ -62,8 +62,8 @@ const ReminderListScreen: React.FC = () => {
   // Function to handle completing/uncompleting a reminder
   const handleToggleCompleteReminder = async (reminderId: string, currentStatus: boolean) => {
     try {
-      await (getPlatformSpecificFirestore as any) // Explicitly cast to any
-  .collection('reminders')
+      await (getPlatformSpecificFirestore() as any) // Call the function directly
+        .collection('reminders')
         .doc(reminderId)
         .update({
           completed: !currentStatus,

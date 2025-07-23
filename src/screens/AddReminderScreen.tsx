@@ -23,8 +23,8 @@ const AddReminderScreen: React.FC = () => {
     }
 
     try {
-      await (getPlatformSpecificFirestore as any) // Cast to any
-  .collection('reminders')
+      await (getPlatformSpecificFirestore() as any) // Call the function directly
+        .collection('reminders')
         .add({
           text: task,
           time: time, // You might want to store time in a more structured format (e.g., Date object)
