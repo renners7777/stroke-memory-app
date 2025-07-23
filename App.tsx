@@ -13,7 +13,8 @@ import {
 } from '@env';
 
 import * as firebaseWeb from 'firebase/app';
-import 'firebase/firestore';
+// Add this direct import for the Firestore module
+import 'firebase/firestore'; // Ensure the side effects of this import are processed
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
