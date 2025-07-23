@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
-import { firestore } from '../utils/firebase';
+import { getPlatformSpecificFirestore } from '../utils/firebase'; // Import the function
 import { useNavigation } from '@react-navigation/native'; // Make sure this line is present
 
 const FieldValue = {
@@ -23,7 +23,7 @@ const AddReminderScreen: React.FC = () => {
     }
 
     try {
-      await (firestore as any) // Cast to any
+      await (getPlatformSpecificFirestore as any) // Cast to any
   .collection('reminders')
         .add({
           text: task,

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, Platform } from 'react-native';
 import ReminderItem from '../components/ReminderItem';
-import { firestore } from '../utils/firebase'; // Import firestore from the helper file
 import { useNavigation } from '@react-navigation/native'; // Make sure this line is present
+import { getPlatformSpecificFirestore } from '../utils/firebase'; // Import the function
 
 // Import necessary types from the Firebase web SDK
 import type {
@@ -33,7 +33,7 @@ const ReminderListScreen: React.FC = () => {
 
   // Fetch reminders from Firestore
   useEffect(() => {
-    const subscriber = (firestore as any) // Explicitly cast to any
+    const subscriber = (getPlatformSpecificFirestore as any) // Explicitly cast to any
   .collection('reminders')
       .orderBy('time')
       .onSnapshot(
@@ -62,7 +62,7 @@ const ReminderListScreen: React.FC = () => {
   // Function to handle completing/uncompleting a reminder
   const handleToggleCompleteReminder = async (reminderId: string, currentStatus: boolean) => {
     try {
-      await (firestore as any) // Explicitly cast to any
+      await (getPlatformSpecificFirestore as any) // Explicitly cast to any
   .collection('reminders')
         .doc(reminderId)
         .update({
