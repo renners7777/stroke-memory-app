@@ -1,7 +1,6 @@
-import React from 'react';
-import { Platform } from 'react-native'; // Import Platform
-import firebase from '@react-native-firebase/app'; // Import react-native-firebase core
-
+import React, { useEffect, useState } from 'react'; // Import useEffect and useState
+import { View, Text, StyleSheet, Platform } from 'react-native'; // Import View, Text, StyleSheet if needed for loading
+import firebase from '@react-native-firebase/app';
 import {
   API_KEY,
   AUTH_DOMAIN,
@@ -12,9 +11,8 @@ import {
   MEASUREMENT_ID,
 } from '@env';
 
-// Import Firebase modules from the web SDK for web builds
 import * as firebaseWeb from 'firebase/app';
-import 'firebase/firestore'; // Import Firestore from the web SDK
+import 'firebase/firestore';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -52,42 +50,60 @@ const isFirebaseConfigValid = (config: any): boolean => {
 };
 
 
-console.log("App.tsx: Before Firebase initialization check");
-if (!firebase.apps.length && (!('__FIREBASE_WEB_INITIALIZED__' in global) || !(global as any).__FIREBASE_WEB_INITIALIZED__) && isFirebaseConfigValid(firebaseConfig)) { // Add web check
-  console.log("App.tsx: Initializing Firebase...");
-
-  if (Platform.OS === 'web') {
-    try {
-      firebaseWeb.initializeApp(firebaseConfig);
-      (global as any).__FIREBASE_WEB_INITIALIZED__ = true; // Mark web initialized
-      console.log("App.tsx: Firebase Web SDK initialized successfully!");
-    } catch (error) {
-      console.error("App.tsx: Error during Firebase Web SDK initialization:", error);
-    }
-  } else {
-    try {
-      firebase.initializeApp(firebaseConfig);
-      console.log("App.tsx: React Native Firebase initialized successfully!");
-    } catch (error) {
-      console.error("App.tsx: Error during React Native Firebase initialization:", error);
-    }
-  }
-
-} else if (firebase.apps.length > 0 || (Platform.OS === 'web' && ('__FIREBASE_WEB_INITIALIZED__' in global) && (global as any).__FIREBASE_WEB_INITIALIZED__)) { // Update check
-  console.log("App.tsx: Firebase already initialized.");
-  // No need to call .app() here unless you specifically need a non-default app instance
-} else {
-  console.error("App.tsx: Firebase configuration is missing or invalid, skipping initialization.");
-}
-console.log("App.tsx: After Firebase initialization logic");
-
+console.log("App.tsx: Before App component definition");
 
 const Stack = createNativeStackNavigator();
 
-console.log("App.tsx: Before App component return");
-
 const App = () => {
-  console.log("App component rendering...");
+  const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false); // State for initialization status
+
+  useEffect(() => {
+    console.log("App.tsx useEffect: Checking Firebase initialization status...");
+    const initializeFirebase = async () => {
+      if (!firebase.apps.length && (!('__FIREBASE_WEB_INITIALIZED__' in global) || !(global as any).__FIREBASE_WEB_INITIALIZED__) && isFirebaseConfigValid(firebaseConfig)) {
+        console.log("App.tsx useEffect: Initializing Firebase...");
+        if (Platform.OS === 'web') {
+          try {
+            firebaseWeb.initializeApp(firebaseConfig);
+            (global as any).__FIREBASE_WEB_INITIALIZED__ = true;
+            console.log("App.tsx useEffect: Firebase Web SDK initialized successfully!");
+          } catch (error) {
+            console.error("App.tsx useEffect: Error during Firebase Web SDK initialization:", error);
+          }
+        } else {
+          try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("App.tsx useEffect: React Native Firebase initialized successfully!");
+          } catch (error) {
+            console.error("App.tsx useEffect: Error during React Native Firebase initialization:", error);
+          }
+        }
+      } else {
+        console.log("App.tsx useEffect: Firebase already initialized or config invalid.");
+      }
+
+      // After initialization attempt, check if an app is available
+      if (firebase.apps.length > 0 || (Platform.OS === 'web' && firebaseWeb.getApps().length > 0)) {
+        setIsFirebaseInitialized(true); // Set state to true if initialized
+        console.log("App.tsx useEffect: Setting isFirebaseInitialized to true.");
+      } else {
+        console.error("App.tsx useEffect: Firebase not initialized after attempt.");
+        // Handle the case where initialization failed (e.g., show an error screen)
+      }
+    };
+
+    initializeFirebase();
+  }, []); // Run this effect only once on mount
+
+  console.log("App component rendering. isFirebaseInitialized:", isFirebaseInitialized);
+
+  if (!isFirebaseInitialized) {
+    console.log("App component: Firebase not initialized, rendering loading/null.");
+    // You could render a loading spinner or splash screen here
+    return <Text>Loading...</Text>; // Or return null
+  }
+
+  console.log("App component: Firebase initialized, rendering NavigationContainer.");
   return (
     <NavigationContainer>
       <Stack.Navigator>
