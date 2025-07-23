@@ -23,6 +23,8 @@ import ReminderAlertScreen from './src/screens/ReminderAlertScreen'; // Import R
 
 console.log("App.tsx: Before firebaseConfig");
 
+console.log("App.tsx: Module loaded and executing."); // Very early log
+
 const firebaseConfig: any = {
   apiKey: API_KEY || null,
   authDomain: AUTH_DOMAIN || null,
