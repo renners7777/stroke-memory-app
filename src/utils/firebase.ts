@@ -6,6 +6,7 @@ import type { Firestore as FirestoreWeb } from 'firebase/firestore';
 import type { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
 import * as firebaseWeb from 'firebase/app';
+import { getFirestore } from 'firebase/firestore'; // Import getFirestore at the top
 
 
 type PlatformFirestore = FirestoreWeb | FirebaseFirestoreTypes.Module;
@@ -21,13 +22,12 @@ const getPlatformSpecificFirestore = (): PlatformFirestore => {
     }
     console.log("getPlatformSpecificFirestore: Web app initialized. Getting Firestore instance...");
     try {
-      const { getFirestore } = require('firebase/firestore');
-      const firestoreInstance = getFirestore(firebaseWeb.getApps()[0]); // No need for 'as FirestoreWeb' here anymore
+      const firestoreInstance = getFirestore(firebaseWeb.getApps()[0]); // Use the imported getFirestore
       console.log("getPlatformSpecificFirestore: Web Firestore instance obtained:", firestoreInstance);
        if (typeof firestoreInstance.collection !== 'function') {
          console.error("getPlatformSpecificFirestore: Web Firestore instance does NOT have .collection method!", firestoreInstance);
       }
-      return firestoreInstance as any; // Cast to any here
+      return firestoreInstance as any;
     } catch (error) {
        console.error("getPlatformSpecificFirestore: Error getting Web Firestore instance:", error);
        throw error;
@@ -35,7 +35,7 @@ const getPlatformSpecificFirestore = (): PlatformFirestore => {
   } else {
     console.log("getPlatformSpecificFirestore: Checking native app initialization...");
     if (firebase.apps.length === 0) {
-       console.error("getPlatformSpecificFirestore: React Native Firebase App not initialized!");
+       console.error("getPlatformSpecificFirestore: React Native Firebase App not initialized.");
        throw new Error("React Native Firebase App not initialized.");
     }
     console.log("getPlatformSpecificFirestore: Native app initialized. Getting Firestore instance...");
@@ -45,7 +45,7 @@ const getPlatformSpecificFirestore = (): PlatformFirestore => {
        if (typeof firestoreInstance.collection !== 'function') {
          console.error("getPlatformSpecificFirestore: Native Firestore instance does NOT have .collection method!", firestoreInstance);
       }
-      return firestoreInstance as any; // Cast to any here
+      return firestoreInstance as any;
     } catch (error) {
        console.error("getPlatformSpecificFirestore: Error getting Native Firestore instance:", error);
        throw error;
