@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+import { firestore } from '../utils/firebase';
+import { useNavigation } from '@react-navigation/native'; // Make sure this line is present
+
 
 
 const AddReminderScreen: React.FC = () => {

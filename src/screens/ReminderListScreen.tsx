@@ -1,15 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, TouchableOpacity, Platform } from 'react-native';
 import ReminderItem from '../components/ReminderItem';
-import firestore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
+import { firestore } from '../utils/firebase'; // Import firestore from the helper file
+import { useNavigation } from '@react-navigation/native'; // Make sure this line is present
+
+// Import necessary types from the Firebase web SDK
+import type {
+  QuerySnapshot,
+  DocumentSnapshot,
+  FirestoreError,
+  Firestore as FirestoreType // Rename import to avoid conflict with variable name
+} from 'firebase/firestore';
+
+// Import serverTimestamp from the correct SDK based on platform
+const FieldValue = {
+  serverTimestamp: () => Platform.OS === 'web'
+    ? require('firebase/firestore').FieldValue.serverTimestamp() // Use web SDK FieldValue
+    : require('@react-native-firebase/firestore').FieldValue.serverTimestamp(), // Use native SDK FieldValue
+};
 
 
 interface Reminder {
   id: string;
   text: string;
   time: string; // Or a Date type
-  completed: boolean;
+  completed: boolean; // Add a completed status field
   // Add other reminder properties as needed
 }
 
@@ -20,37 +35,41 @@ const ReminderListScreen: React.FC = () => {
 
   // Fetch reminders from Firestore
   useEffect(() => {
-    const subscriber = firestore()
+    const subscriber = (firestore as FirestoreType) // Explicitly cast firestore to FirestoreType
       .collection('reminders')
       .orderBy('time')
-      .onSnapshot(querySnapshot => {
-        const fetchedReminders: Reminder[] = [];
-        querySnapshot.forEach(documentSnapshot => {
-          fetchedReminders.push({
-            id: documentSnapshot.id,
-            ...documentSnapshot.data(),
-          } as Reminder);
-        });
-        setReminders(fetchedReminders);
-        setLoading(false);
-      }, error => {
-        console.error("Error fetching reminders: ", error);
-        setLoading(false);
-        Alert.alert("Error", "Failed to fetch reminders.");
-      });
+      .onSnapshot(
+        (querySnapshot: QuerySnapshot) => { // Add type annotation
+          const fetchedReminders: Reminder[] = [];
+          querySnapshot.forEach((documentSnapshot: DocumentSnapshot) => { // Add type annotation
+            fetchedReminders.push({
+              id: documentSnapshot.id,
+              ...documentSnapshot.data(),
+            } as Reminder);
+          });
+          setReminders(fetchedReminders);
+          setLoading(false);
+        },
+        (error: FirestoreError) => { // Add type annotation
+          console.error("Error fetching reminders: ", error);
+          setLoading(false);
+          Alert.alert("Error", "Failed to fetch reminders.");
+        }
+      );
 
+    // Unsubscribe from events when no longer in use
     return () => subscriber();
   }, []);
 
-  // Function to handle toggling reminder completion
+  // Function to handle completing/uncompleting a reminder
   const handleToggleCompleteReminder = async (reminderId: string, currentStatus: boolean) => {
     try {
-      await firestore()
+      await (firestore as FirestoreType) // Explicitly cast firestore
         .collection('reminders')
         .doc(reminderId)
         .update({
           completed: !currentStatus,
-          completedAt: !currentStatus ? firestore.FieldValue.serverTimestamp() : null,
+          completedAt: !currentStatus ? FieldValue.serverTimestamp() : null,
         });
     } catch (error) {
       console.error("Error toggling reminder completion: ", error);
@@ -68,7 +87,6 @@ const ReminderListScreen: React.FC = () => {
     return <Text>Loading reminders...</Text>;
   }
 
-  // Add a placeholder message when there are no reminders
   if (reminders.length === 0) {
     return (
       <View style={styles.container}>

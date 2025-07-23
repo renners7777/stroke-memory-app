@@ -1,8 +1,6 @@
 import React from 'react';
-import firebase from '@react-native-firebase/app'; // Import firebase core
-// Import FirebaseOptions type from the appropriate location if needed,
-// but often it's inferred or part of the global Firebase types after import.
-// If you still get a FirebaseOptions error, you might need a specific type import or declaration.
+import { Platform } from 'react-native'; // Import Platform
+import firebase from '@react-native-firebase/app'; // Import react-native-firebase core
 
 import {
   API_KEY,
@@ -14,19 +12,20 @@ import {
   MEASUREMENT_ID,
 } from '@env';
 
-// Import React Navigation components
+// Import Firebase modules from the web SDK for web builds
+import * as firebaseWeb from 'firebase/app';
+import 'firebase/firestore'; // Import Firestore from the web SDK
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Import your screens
 import ReminderListScreen from './src/screens/ReminderListScreen';
 import AddReminderScreen from './src/screens/AddReminderScreen';
 
 
-console.log("App.tsx: Before firebaseConfig"); // Log 1
+console.log("App.tsx: Before firebaseConfig");
 
-// Use 'any' or a more specific type if FirebaseOptions is not directly exportable
-const firebaseConfig: any = { // Using 'any' temporarily if FirebaseOptions import fails
+const firebaseConfig: any = {
   apiKey: API_KEY || null,
   authDomain: AUTH_DOMAIN || null,
   projectId: PROJECT_ID || null,
@@ -34,10 +33,10 @@ const firebaseConfig: any = { // Using 'any' temporarily if FirebaseOptions impo
   messagingSenderId: MESSAGING_SENDER_ID || null,
   appId: APP_ID || null,
   measurementId: MEASUREMENT_ID || null,
-  databaseURL: undefined, // Keep this as undefined
+  databaseURL: undefined,
 };
 
-console.log("App.tsx: After firebaseConfig", firebaseConfig); // Log 2
+console.log("App.tsx: After firebaseConfig", firebaseConfig);
 
 const isFirebaseConfigValid = (config: any): boolean => {
   const isValid = (
@@ -48,41 +47,47 @@ const isFirebaseConfigValid = (config: any): boolean => {
     config.messagingSenderId &&
     config.appId
   );
-  console.log("App.tsx: isFirebaseConfigValid", isValid, config); // Log 3
+  console.log("App.tsx: isFirebaseConfigValid", isValid, config);
   return isValid;
 };
 
 
-console.log("App.tsx: Before Firebase initialization check"); // Log 4
-// Initialize Firebase ONLY if config is valid and not already initialized
-if (!firebase.apps.length && isFirebaseConfigValid(firebaseConfig)) {
-  console.log("App.tsx: Initializing Firebase..."); // Log 5
-  const webFirebaseConfig: any = { // Using 'any' temporarily here too
-    ...firebaseConfig,
-    databaseURL: firebaseConfig.databaseURL === undefined ? '' : firebaseConfig.databaseURL,
-  };
-  try {
-    firebase.initializeApp(webFirebaseConfig);
-    console.log("App.tsx: Firebase initialized successfully!"); // Log 6
-  } catch (error) {
-    console.error("App.tsx: Error during Firebase initialization:", error); // Log 7
+console.log("App.tsx: Before Firebase initialization check");
+if (!firebase.apps.length && (!('__FIREBASE_WEB_INITIALIZED__' in global) || !(global as any).__FIREBASE_WEB_INITIALIZED__) && isFirebaseConfigValid(firebaseConfig)) { // Add web check
+  console.log("App.tsx: Initializing Firebase...");
+
+  if (Platform.OS === 'web') {
+    try {
+      firebaseWeb.initializeApp(firebaseConfig);
+      (global as any).__FIREBASE_WEB_INITIALIZED__ = true; // Mark web initialized
+      console.log("App.tsx: Firebase Web SDK initialized successfully!");
+    } catch (error) {
+      console.error("App.tsx: Error during Firebase Web SDK initialization:", error);
+    }
+  } else {
+    try {
+      firebase.initializeApp(firebaseConfig);
+      console.log("App.tsx: React Native Firebase initialized successfully!");
+    } catch (error) {
+      console.error("App.tsx: Error during React Native Firebase initialization:", error);
+    }
   }
-} else if (firebase.apps.length > 0) {
-  console.log("App.tsx: Firebase already initialized."); // Log 8
-  firebase.app();
+
+} else if (firebase.apps.length > 0 || (Platform.OS === 'web' && ('__FIREBASE_WEB_INITIALIZED__' in global) && (global as any).__FIREBASE_WEB_INITIALIZED__)) { // Update check
+  console.log("App.tsx: Firebase already initialized.");
+  // No need to call .app() here unless you specifically need a non-default app instance
 } else {
-  console.error("App.tsx: Firebase configuration is missing or invalid, skipping initialization."); // Log 9
+  console.error("App.tsx: Firebase configuration is missing or invalid, skipping initialization.");
 }
-console.log("App.tsx: After Firebase initialization logic"); // Log 10
+console.log("App.tsx: After Firebase initialization logic");
 
 
-// Create a Stack Navigator
 const Stack = createNativeStackNavigator();
 
-console.log("App.tsx: Before App component return"); // Log 11
+console.log("App.tsx: Before App component return");
 
 const App = () => {
-  console.log("App component rendering..."); // Log 12
+  console.log("App component rendering...");
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -101,6 +106,6 @@ const App = () => {
   );
 };
 
-console.log("App.tsx: After App component definition"); // Log 17
+console.log("App.tsx: After App component definition");
 
 export default App;
