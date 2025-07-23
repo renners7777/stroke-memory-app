@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'; // Import useEffect and useState
-import { View, Text, StyleSheet, Platform } from 'react-native'; // Import View, Text, StyleSheet if needed for loading
+import { Platform } from 'react-native';
+import { Text } from 'react-native'; // Keep Text for the loading indicator
 import firebase from '@react-native-firebase/app';
 import {
   API_KEY,

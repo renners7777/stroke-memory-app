@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { firestore } from '../utils/firebase';
 import { useNavigation } from '@react-navigation/native'; // Make sure this line is present
 
-
+const FieldValue = {
+  serverTimestamp: () => Platform.OS === 'web'
+    ? require('firebase/firestore').FieldValue.serverTimestamp() // Use web SDK FieldValue
+    : require('@react-native-firebase/firestore').FieldValue.serverTimestamp(), // Use native SDK FieldValue
+};
 
 const AddReminderScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -19,13 +23,14 @@ const AddReminderScreen: React.FC = () => {
     }
 
     try {
-      await firestore()
-        .collection('reminders')
+      await (firestore as any) // Cast to any
+  .collection('reminders')
         .add({
           text: task,
           time: time, // You might want to store time in a more structured format (e.g., Date object)
           completed: false, // New reminders are not completed
-          createdAt: firestore.FieldValue.serverTimestamp(), // Add a creation timestamp
+          createdAt: FieldValue.serverTimestamp(), // Use the helper
+ // Add a creation timestamp
           // Add other reminder properties here (e.g., user ID for filtering)
         });
 

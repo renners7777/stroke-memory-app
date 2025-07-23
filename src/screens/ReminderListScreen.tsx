@@ -9,7 +9,6 @@ import type {
   QuerySnapshot,
   DocumentSnapshot,
   FirestoreError,
-  Firestore as FirestoreType // Rename import to avoid conflict with variable name
 } from 'firebase/firestore';
 
 // Import serverTimestamp from the correct SDK based on platform
@@ -18,7 +17,6 @@ const FieldValue = {
     ? require('firebase/firestore').FieldValue.serverTimestamp() // Use web SDK FieldValue
     : require('@react-native-firebase/firestore').FieldValue.serverTimestamp(), // Use native SDK FieldValue
 };
-
 
 interface Reminder {
   id: string;
@@ -35,8 +33,8 @@ const ReminderListScreen: React.FC = () => {
 
   // Fetch reminders from Firestore
   useEffect(() => {
-    const subscriber = (firestore as FirestoreType) // Explicitly cast firestore to FirestoreType
-      .collection('reminders')
+    const subscriber = (firestore as any) // Explicitly cast to any
+  .collection('reminders')
       .orderBy('time')
       .onSnapshot(
         (querySnapshot: QuerySnapshot) => { // Add type annotation
@@ -64,8 +62,8 @@ const ReminderListScreen: React.FC = () => {
   // Function to handle completing/uncompleting a reminder
   const handleToggleCompleteReminder = async (reminderId: string, currentStatus: boolean) => {
     try {
-      await (firestore as FirestoreType) // Explicitly cast firestore
-        .collection('reminders')
+      await (firestore as any) // Explicitly cast to any
+  .collection('reminders')
         .doc(reminderId)
         .update({
           completed: !currentStatus,
