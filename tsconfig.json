@@ -1,3 +1,19 @@
 {
-  "extends": "@react-native/typescript-config"
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "types": [ // Include type declarations from these packages
+      "jest", // Example, if you use Jest
+      "react",
+      "react-native",
+      // Potentially add others if needed, but let's rely on node_modules/@types first
+    ],
+    "typeRoots": [ // Look for type declarations in these directories
+      "./node_modules/@types",
+      "./types" // If you have custom types in a 'types' directory
+    ],
+    // Other options...
+  },
+  // Other configurations...
 }

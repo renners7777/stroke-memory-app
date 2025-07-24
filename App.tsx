@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'; // Import useRef
 import { Text, Platform, Alert } from 'react-native';
 import firebase from '@react-native-firebase/app';
 import * as Notifications from 'expo-notifications';
+import type { NotificationBehavior } from 'expo-notifications';
 
 import {
   API_KEY,
@@ -59,11 +60,13 @@ const Stack = createNativeStackNavigator();
 
 // Configure how notifications are presented when the app is in the foreground
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true, // Show alert
-    shouldPlaySound: true, // Play sound
-    shouldSetBadge: false, // Don't set badge count
-  }),
+  handleNotification: async (): Promise<Notifications.NotificationBehavior> => ({ // Add return type annotation
+    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),  
 });
 
 // Import React Navigation components and types
@@ -85,8 +88,9 @@ const App = () => {
   const [isFirebaseInitialized, setIsFirebaseInitialized] = useState(false);
   const [areNotificationsPermitted, setAreNotificationsPermitted] = useState(false);
 
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const notificationListener = useRef<Notifications.Subscription>(null); // Add null
+  const responseListener = useRef<Notifications.Subscription>(null); // Add null
+  
 
   // Declare navigationRef with the type annotation INSIDE the component
   const navigationRef = useNavigationContainerRef<RootStackParamList>();
