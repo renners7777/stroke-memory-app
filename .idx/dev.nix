@@ -7,6 +7,7 @@
     pkgs.nodejs_20 # Node.js for running React Native
     # You might need other packages later depending on your specific needs,
     # like watchman for file watching or specific Android/iOS build tools
+    pkgs.android-tools
   ];
 
   # Configure Firebase Studio specific settings
