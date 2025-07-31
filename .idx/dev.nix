@@ -9,6 +9,7 @@
     # like watchman for file watching or specific Android/iOS build tools
     pkgs.android-tools
     pkgs.nano
+    pkgs.dos2unix
      # Add specific Android SDK components managed by Nix
      
   ];
