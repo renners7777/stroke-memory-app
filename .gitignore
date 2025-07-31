@@ -26,5 +26,5 @@ firebase-adminsdk.json # If you are using Admin SDK locally
 *.iml
 .vscode/ # Ignore VS Code specific settings if you don't want to share them
 
-'/android'
-'/ios' 
+/android
+/ios 
