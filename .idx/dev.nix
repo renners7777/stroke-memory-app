@@ -9,6 +9,10 @@
     # like watchman for file watching or specific Android/iOS build tools
     pkgs.android-tools
     pkgs.nano
+     # Add specific Android SDK components managed by Nix
+    pkgs.androidsdk.platforms.android-33 # Example: Android 13 Platform (API 33)
+    pkgs.androidsdk.build-tools.latest # Example: Latest build tools
+    pkgs.androidsdk.emulator # Example: Android emulator
   ];
 
   # Configure Firebase Studio specific settings
@@ -49,8 +53,5 @@
     # };
   };
 
-  # You can also define environment variables here if needed
-  env = {
-    ANDROID_HOME = "/home/chrisrenshaw/Android/Sdk";
-  };
+
 }
