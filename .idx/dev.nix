@@ -50,7 +50,7 @@
   };
 
   # You can also define environment variables here if needed
-  # env = {
-  #   MY_VARIABLE = "some_value";
-  # };
+  env = {
+    ANDROID_HOME = "/home/chrisrenshaw/Android/Sdk";
+  };
 }
