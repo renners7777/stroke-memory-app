@@ -10,9 +10,7 @@
     pkgs.android-tools
     pkgs.nano
      # Add specific Android SDK components managed by Nix
-    pkgs.androidsdk.platforms.android-33 # Example: Android 13 Platform (API 33)
-    pkgs.androidsdk.build-tools.latest # Example: Latest build tools
-    pkgs.androidsdk.emulator # Example: Android emulator
+     
   ];
 
   # Configure Firebase Studio specific settings
