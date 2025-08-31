@@ -1,5 +1,5 @@
-import { Client, Account, Databases, ID, Models } from "appwrite";
-import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from '@env';
+import { Client, Account, Databases, ID, Models, Query } from "appwrite";
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from "@env"
 
 const APPWRITE_DATABASE_ID = "68b213e7001400dc7f21";
 const USERS_COLLECTION_ID = "users";
@@ -17,6 +17,8 @@ export interface UserDocument extends Models.Document {
   email: string;
   shareable_id: string;
   canCompanionAddTask?: boolean;
+  accountId: string; 
+  username: string; 
 }
 
 /**
@@ -63,7 +65,9 @@ export async function registerNewPatient(email: string, password: string, name: 
       {
         name: name,
         email: email,
-        shareable_id: shareableId
+        shareable_id: shareableId,
+        accountId: userId,
+        username: name
       }
     );
 
@@ -77,5 +81,49 @@ export async function registerNewPatient(email: string, password: string, name: 
   } catch (error) {
     console.error("Error during patient registration:", error);
     throw error;
+  }
+}
+
+// Corresponds to user's 'createUser'
+export async function createUser(email: string, password: string, username: string) {
+    return registerNewPatient(email, password, username)
+}
+
+
+export async function signIn(email: string, password: string) {
+  try {
+    const session = await account.createEmailPasswordSession(email, password);
+    return session;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+}
+
+export async function getAccount() {
+  try {
+    const currentAccount = await account.get();
+    return currentAccount;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+}
+
+export async function getCurrentUser() {
+  try {
+    const currentAccount = await getAccount();
+    if (!currentAccount) throw Error;
+
+    const currentUser = await databases.listDocuments(
+      APPWRITE_DATABASE_ID,
+      USERS_COLLECTION_ID,
+      [Query.equal("accountId", currentAccount.$id)]
+    );
+
+    if (!currentUser) throw Error;
+
+    return currentUser.documents[0];
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 }
