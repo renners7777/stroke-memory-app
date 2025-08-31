@@ -1,53 +1,37 @@
-> Edited for use in IDX on 07/09/12
+# Stroke Memory App
 
-# Welcome to your Expo app 👋
+This project is a mobile application designed to support stroke survivors with memory issues and other related challenges. It is built using React Native and Expo, and it was initially based on the starter code provided by Firebase.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Project Goal
 
-## Get started
+The primary goal of this application is to provide a set of tools and features that can help stroke survivors in their daily lives. This includes, but is not limited to:
 
-#### Android
+*   Memory aids and reminders
+*   Cognitive exercises
+*   A supportive community platform
 
-Android previews are defined as a `workspace.onStart` hook and started as a vscode task when the workspace is opened/started.
+## Future Plans
 
-Note, if you can't find the task, either:
-- Rebuild the environment (using command palette: `IDX: Rebuild Environment`), or
-- Run `npm run android -- --tunnel` command manually run android and see the output in your terminal. The device should pick up this new command and switch to start displaying the output from it.
+Once development and testing are complete, the goal is to launch this application on the Google Play Store to make it widely available to those who need it.
 
-In the output of this command/task, you'll find options to open the app in a
+## Getting Started
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You'll also find options to open the app's developer menu, reload the app, and more.
-
-#### Web
-
-Web previews will be started and managred automatically. Use the toolbar to manually refresh.
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+To get started with this project, you will need to have Node.js and the Expo CLI installed. You can then clone this repository and install the dependencies by running the following commands:
 
 ```bash
-npm run reset-project
+git clone https://github.com/your-username/stroke-memory-app.git
+cd stroke-memory-app
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Once the dependencies are installed, you can start the development server by running:
 
-## Learn more
+```bash
+npm start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+This will open the Expo developer tools in your browser. You can then use the Expo Go app on your iOS or Android device to scan the QR code and run the app.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Acknowledgements
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project was originally bootstrapped from a Firebase starter template for React Native and Expo. We are grateful to the Firebase team for providing a solid foundation for this application.
