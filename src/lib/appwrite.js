@@ -10,6 +10,20 @@ const client = new Client()
 
 export const account = new Account(client);
 export const databases = new Databases(client);
+export async function updateUserPermissions(canAddTask) {
+  try {
+    const user = await account.get(); // Get the currently logged-in user
+    return await databases.updateDocument(
+      APPWRITE_DATABASE_ID,
+      USERS_COLLECTION_ID,
+      user.$id,
+      { canCompanionAddTask: canAddTask } // The data to update
+    );
+  } catch (error) {
+    console.error("Failed to update user permissions:", error);
+    throw error;
+  }
+}
 
 /**
  * Registers a new patient user in your React Native App.
