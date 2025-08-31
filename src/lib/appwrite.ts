@@ -26,20 +26,20 @@ export interface UserDocument extends Models.Document {
  * @param {boolean} canAddTask - Whether the user can add a task.
  * @returns {Promise<Models.Document>} The updated user document.
  */
-export async function updateUserPermissions(canAddTask: boolean): Promise<Models.Document> {
-  try {
-    const user = await account.get(); // Get the currently logged-in user
-    return await databases.updateDocument(
-      APPWRITE_DATABASE_ID,
-      USERS_COLLECTION_ID,
-      user.$id,
-      { canCompanionAddTask: canAddTask } // The data to update
-    );
-  } catch (error) {
-    console.error("Failed to update user permissions:", error);
-    throw error;
-  }
-}
+// export async function updateUserPermissions(canAddTask: boolean): Promise<Models.Document> {
+//   try {
+//     const user = await account.get(); // Get the currently logged-in user
+//     return await databases.updateDocument(
+//       APPWRITE_DATABASE_ID,
+//       USERS_COLLECTION_ID,
+//       user.$id,
+//       { canCompanionAddTask: canAddTask } // The data to update
+//     );
+//   } catch (error) {
+//     console.error("Failed to update user permissions:", error);
+//     throw error;
+//   }
+// }
 
 /**
  * Registers a new patient user in your React Native App.
