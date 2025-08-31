@@ -6,7 +6,7 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [ pkgs.nodejs_20 ];
   # Sets environment variables in the workspace
-  env = { EXPO_USE_FAST_RESOLVER = true; };
+  env = { EXPO_USE_FAST_RESOLVER = "true"; };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
@@ -20,12 +20,11 @@
       };
       # Runs when a workspace restarted
       onStart = {
-        android = ''
+        android = '''
           echo -e "\033[1;33mWaiting for Android emulator to be ready...\033[0m"
-          # Wait for the device connection command to finish
-          adb -s emulator-5554 wait-for-device && \
-          npm run android -- --tunnel
-        '';
+# Wait for the device connection command to finish
+          adb -s emulator-5554 wait-for-device &&           npm run android -- --tunnel
+        ''';
       };
     };
     # Enable previews and customize configuration
@@ -45,3 +44,4 @@
     };
   };
 }
+'';};};};}
