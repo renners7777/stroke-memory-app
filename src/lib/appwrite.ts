@@ -1,16 +1,30 @@
-import { Client, Account, Databases, ID } from "appwrite";
-import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from '@env'; // Import from @env
+import { Client, Account, Databases, ID, Models } from "appwrite";
+import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from '@env';
 
 const APPWRITE_DATABASE_ID = "68b213e7001400dc7f21";
 const USERS_COLLECTION_ID = "users";
 
 const client = new Client()
-    .setEndpoint(APPWRITE_ENDPOINT)   // Use the imported variable
-    .setProject(APPWRITE_PROJECT_ID); // Use the imported variable
+    .setEndpoint(APPWRITE_ENDPOINT)
+    .setProject(APPWRITE_PROJECT_ID);
 
 export const account = new Account(client);
 export const databases = new Databases(client);
-export async function updateUserPermissions(canAddTask) {
+
+// Interface for your user document structure for better type safety
+export interface UserDocument extends Models.Document {
+  name: string;
+  email: string;
+  shareable_id: string;
+  canCompanionAddTask?: boolean;
+}
+
+/**
+ * Updates the user's permissions to add a task.
+ * @param {boolean} canAddTask - Whether the user can add a task.
+ * @returns {Promise<Models.Document>} The updated user document.
+ */
+export async function updateUserPermissions(canAddTask: boolean): Promise<Models.Document> {
   try {
     const user = await account.get(); // Get the currently logged-in user
     return await databases.updateDocument(
@@ -27,13 +41,12 @@ export async function updateUserPermissions(canAddTask) {
 
 /**
  * Registers a new patient user in your React Native App.
- * Creates both an authentication entry and a database record in Appwrite.
  * @param {string} email - The user's email address.
  * @param {string} password - The user's chosen password.
  * @param {string} name - The user's full name.
- * @returns {Promise<object>} The newly created user document from the database.
+ * @returns {Promise<UserDocument>} The newly created user document from the database.
  */
-export async function registerNewPatient(email, password, name) {
+export async function registerNewPatient(email: string, password: string, name: string): Promise<UserDocument> {
   try {
     // Step 1: Create the user in Appwrite's Authentication service.
     const newUserAccount = await account.create(ID.unique(), email, password, name);
@@ -43,7 +56,7 @@ export async function registerNewPatient(email, password, name) {
     const shareableId = Math.random().toString(36).substring(2, 8).toUpperCase();
 
     // Step 3: Create a corresponding document in your 'users' collection.
-    const newUserDocument = await databases.createDocument(
+    const newUserDocument = await databases.createDocument<UserDocument>(
       APPWRITE_DATABASE_ID,
       USERS_COLLECTION_ID,
       userId,
@@ -63,7 +76,6 @@ export async function registerNewPatient(email, password, name) {
 
   } catch (error) {
     console.error("Error during patient registration:", error);
-    // Propagate the error to be handled by the UI component
     throw error;
   }
 }

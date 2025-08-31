@@ -1,4 +1,4 @@
-// In your React Native project: src/screens/RegisterScreen.jsx
+// In your React Native project: src/screens/RegisterScreen.tsx
 
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
@@ -18,7 +18,11 @@ const RegisterScreen = () => {
       // Navigate to the user's dashboard or profile screen from here
       // e.g., navigation.navigate('UserDashboard', { user: newUser });
     } catch (err) {
-      setError(err.message || 'An unexpected error occurred.');
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('An unexpected error occurred.');
+        }
     }
   };
 
