@@ -1,4 +1,12 @@
-node_modules
+# dependencies
+node_modules/
+
+# environment variables
 .env
-.expo-env.d.ts
+
+# expo
 .expo/
+.expo-env.d.ts
+
+# vscode
+.vscode/
