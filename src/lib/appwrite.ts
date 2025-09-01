@@ -4,7 +4,7 @@ import { Account, Client, Databases, ID, Models, Query } from "appwrite";
 export const APPWRITE_DATABASE_ID = "68b213e7001400dc7f21";
 export const USERS_COLLECTION_ID = "users";
 export const MESSAGES_COLLECTION_ID = "messages_table";
-export const TASKS_COLLECTION_ID = "tasks";
+export const REMINDERS_COLLECTION_ID = "reminders_table";
 
 const client = new Client()
     .setEndpoint(APPWRITE_ENDPOINT)
@@ -30,14 +30,14 @@ export interface Message extends Models.Document {
   message: string;
 }
 
-// Interface for a task document
-export interface Task extends Models.Document {
+// Interface for a reminder document
+export interface Reminder extends Models.Document {
   title: string;
   description?: string;
   isCompleted: boolean;
   dueDate: string; // ISO 8601 string
   patientId: string; // The user this task is for
-  addedBy: string; // Who added the task (patient or companion)
+  addedBy: string; // Who added the reminder (patient or companion)
   isAcknowledged: boolean; // To track if the user has stopped the alarm
 }
 
@@ -173,25 +173,25 @@ export async function getCurrentUser(): Promise<UserDocument | null> {
   }
 }
 
-// --- Task Functions ---
+// --- Reminder Functions ---
 
 /**
- * Creates a new task for a user.
- * @param {object} taskData - The data for the new task.
- * @returns {Promise<Task>} The created task document.
+ * Creates a new reminder for a user.
+ * @param {object} reminderData - The data for the new reminder.
+ * @returns {Promise<Reminder>} The created reminder document.
  */
-export async function createTask(taskData: {
+export async function createReminder(reminderData: {
   patientId: string;
   addedById: string;
   title: string;
   dueDate: Date;
   description?: string;
-}): Promise<Task> {
+}): Promise<Reminder> {
   try {
-    const { patientId, addedById, title, dueDate, description } = taskData;
-    const taskDoc = await databases.createDocument<Task>(
+    const { patientId, addedById, title, dueDate, description } = reminderData;
+    const reminderDoc = await databases.createDocument<Reminder>(
       APPWRITE_DATABASE_ID,
-      TASKS_COLLECTION_ID,
+      REMINDERS_COLLECTION_ID,
       ID.unique(),
       {
         patientId: patientId,
@@ -203,43 +203,43 @@ export async function createTask(taskData: {
         isAcknowledged: false,
       }
     );
-    return taskDoc;
+    return reminderDoc;
   } catch (error) {
-    console.error("Failed to create task:", error);
+    console.error("Failed to create reminder:", error);
     throw error;
   }
 }
 
 /**
- * Fetches all tasks for a specific patient.
+ * Fetches all reminders for a specific patient.
  * @param {string} patientId - The user's ID.
- * @returns {Promise<Task[]>} A list of task documents.
+ * @returns {Promise<Reminder[]>} A list of reminder documents.
  */
-export async function getTasks(patientId: string): Promise<Task[]> {
+export async function getReminders(patientId: string): Promise<Reminder[]> {
   try {
-    const response = await databases.listDocuments<Task>(
+    const response = await databases.listDocuments<Reminder>(
       APPWRITE_DATABASE_ID,
-      TASKS_COLLECTION_ID,
+      REMINDERS_COLLECTION_ID,
       [Query.equal('patientId', patientId), Query.orderAsc('dueDate')]
     );
     return response.documents;
   } catch (error) {
-    console.error("Failed to get tasks:", error);
+    console.error("Failed to get reminders:", error);
     throw error;
   }
 }
 
 /**
- * Updates the status of a task.
- * @param {string} taskId - The ID of the task to update.
- * @param {Partial<Pick<Task, 'isCompleted' | 'isAcknowledged'>>} data - The fields to update.
+ * Updates the status of a reminder.
+ * @param {string} reminderId - The ID of the reminder to update.
+ * @param {Partial<Pick<Reminder, 'isCompleted' | 'isAcknowledged'>>} data - The fields to update.
  * @returns {Promise<Models.Document>} The updated task document.
  */
-export async function updateTask(taskId: string, data: Partial<Pick<Task, 'isCompleted' | 'isAcknowledged'>>) {
+export async function updateReminder(reminderId: string, data: Partial<Pick<Reminder, 'isCompleted' | 'isAcknowledged'>>) {
     try {
-        return await databases.updateDocument(APPWRITE_DATABASE_ID, TASKS_COLLECTION_ID, taskId, data);
+        return await databases.updateDocument(APPWRITE_DATABASE_ID, REMINDERS_COLLECTION_ID, reminderId, data);
     } catch (error) {
-        console.error("Failed to update task:", error);
+        console.error("Failed to update reminder:", error);
         throw error;
     }
 }
