@@ -6,9 +6,9 @@ This project is a mobile application designed to support stroke survivors with m
 
 The primary goal of this application is to provide a set of tools and features that can help stroke survivors in their daily lives. This includes, but is not limited to:
 
-*   Memory aids and reminders
-*   Cognitive exercises
-*   A supportive community platform
+* Memory aids and reminders
+* Cognitive exercises
+* A supportive community platform
 
 ## Future Plans
 
