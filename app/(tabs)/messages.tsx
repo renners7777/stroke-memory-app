@@ -1,11 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, AppState } from 'react-native';
-import { getCurrentUser, getMessages, sendMessage, subscribeToMessages, UserDocument, Message, databases } from '../../src/lib/appwrite';
 import { Query } from 'appwrite';
-
-const MESSAGES_COLLECTION_ID = "messages_table";
-const USERS_COLLECTION_ID = "users";
-const APPWRITE_DATABASE_ID = "68b213e7001400dc7f21";
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  APPWRITE_DATABASE_ID,
+  databases,
+  getCurrentUser,
+  getMessages,
+  Message,
+  sendMessage,
+  subscribeToMessages,
+  UserDocument,
+  USERS_COLLECTION_ID,
+} from '../../src/lib/appwrite';
 
 const MessagingScreen = () => {
   const [currentUser, setCurrentUser] = useState<UserDocument | null>(null);
