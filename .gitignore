@@ -1,4 +1,4 @@
-.expo/
 node_modules
 .env
 .expo-env.d.ts
+.expo/
