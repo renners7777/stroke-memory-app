@@ -3,6 +3,7 @@ import { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID } from "@env"
 
 const APPWRITE_DATABASE_ID = "68b213e7001400dc7f21";
 const USERS_COLLECTION_ID = "users";
+const MESSAGES_COLLECTION_ID = "messages_table"; // Use the existing collection name
 
 const client = new Client()
     .setEndpoint(APPWRITE_ENDPOINT)
@@ -11,7 +12,7 @@ const client = new Client()
 export const account = new Account(client);
 export const databases = new Databases(client);
 
-// Interface for your user document structure for better type safety
+// Interface for your user document structure
 export interface UserDocument extends Models.Document {
   name: string;
   email: string;
@@ -21,43 +22,85 @@ export interface UserDocument extends Models.Document {
   username: string; 
 }
 
-/**
- * Updates the user's permissions to add a task.
- * @param {boolean} canAddTask - Whether the user can add a task.
- * @returns {Promise<Models.Document>} The updated user document.
- */
-// export async function updateUserPermissions(canAddTask: boolean): Promise<Models.Document> {
-//   try {
-//     const user = await account.get(); // Get the currently logged-in user
-//     return await databases.updateDocument(
-//       APPWRITE_DATABASE_ID,
-//       USERS_COLLECTION_ID,
-//       user.$id,
-//       { canCompanionAddTask: canAddTask } // The data to update
-//     );
-//   } catch (error) {
-//     console.error("Failed to update user permissions:", error);
-//     throw error;
-//   }
-// }
+// Interface for the message document structure, matching your companion site
+export interface Message extends Models.Document {
+  senderID: string;
+  receiverID: string;
+  message: string;
+}
 
 /**
- * Registers a new patient user in your React Native App.
- * @param {string} email - The user's email address.
- * @param {string} password - The user's chosen password.
- * @param {string} name - The user's full name.
- * @returns {Promise<UserDocument>} The newly created user document from the database.
+ * Sends a message to another user.
+ * @param {string} senderId - The sender's user ID.
+ * @param {string} receiverId - The receiver's user ID.
+ * @param {string} content - The message content.
+ * @returns {Promise<Models.Document>} The created message document.
  */
+export async function sendMessage(senderId: string, receiverId: string, content: string): Promise<Models.Document> {
+  try {
+    const messageDoc = await databases.createDocument(
+      APPWRITE_DATABASE_ID,
+      MESSAGES_COLLECTION_ID,
+      ID.unique(),
+      {
+        senderID: senderId,
+        receiverID: receiverId,
+        message: content,
+      }
+    );
+    return messageDoc;
+  } catch (error) {
+    console.error("Failed to send message:", error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches the conversation between two users.
+ * @param {string} userId1 - The first user's ID.
+ * @param {string} userId2 - The second user's ID.
+ * @returns {Promise<Message[]>} A list of message documents.
+ */
+export async function getMessages(userId1: string, userId2: string): Promise<Message[]> {
+  try {
+    const response = await databases.listDocuments<Message>(
+      APPWRITE_DATABASE_ID,
+      MESSAGES_COLLECTION_ID,
+      [
+        Query.equal('senderID', [userId1, userId2]),
+        Query.equal('receiverID', [userId1, userId2]),
+        Query.orderAsc('$createdAt')
+      ]
+    );
+    return response.documents;
+  } catch (error) {
+    console.error("Failed to get messages:", error);
+    throw error;
+  }
+}
+
+/**
+ * Subscribes to new messages in the collection for real-time updates.
+ * @param {function} callback - The function to execute with the new message payload.
+ * @returns {function} An unsubscribe function.
+ */
+export function subscribeToMessages(callback: (payload: any) => void) {
+  return client.subscribe<Message>(`databases.${APPWRITE_DATABASE_ID}.collections.${MESSAGES_COLLECTION_ID}.documents`, response => {
+      // Ensure the event is a document creation
+      if (response.events.includes("databases.*.collections.*.documents.*.create")) {
+          callback(response);
+      }
+  });
+}
+
+// --- Existing User Functions ---
+
 export async function registerNewPatient(email: string, password: string, name: string): Promise<UserDocument> {
   try {
-    // Step 1: Create the user in Appwrite's Authentication service.
     const newUserAccount = await account.create(ID.unique(), email, password, name);
     const userId = newUserAccount.$id;
-
-    // Step 2: Generate a simple, shareable ID for the user.
     const shareableId = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    // Step 3: Create a corresponding document in your 'users' collection.
     const newUserDocument = await databases.createDocument<UserDocument>(
       APPWRITE_DATABASE_ID,
       USERS_COLLECTION_ID,
@@ -70,25 +113,19 @@ export async function registerNewPatient(email: string, password: string, name: 
         username: name
       }
     );
-
-    console.log("Successfully registered and created user record:", newUserDocument);
     
-    // Step 4: Log the user in immediately after registration.
     await account.createEmailPasswordSession(email, password);
     
     return newUserDocument;
-
   } catch (error) {
     console.error("Error during patient registration:", error);
     throw error;
   }
 }
 
-// Corresponds to user's 'createUser'
 export async function createUser(email: string, password: string, username: string) {
     return registerNewPatient(email, password, username)
 }
-
 
 export async function signIn(email: string, password: string) {
   try {
@@ -108,22 +145,22 @@ export async function getAccount() {
   }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<UserDocument | null> {
   try {
     const currentAccount = await getAccount();
-    if (!currentAccount) throw Error;
+    if (!currentAccount) throw new Error("No user account found");
 
-    const currentUser = await databases.listDocuments(
+    const userDocs = await databases.listDocuments<UserDocument>(
       APPWRITE_DATABASE_ID,
       USERS_COLLECTION_ID,
       [Query.equal("accountId", currentAccount.$id)]
     );
 
-    if (!currentUser) throw Error;
+    if (userDocs.documents.length === 0) throw new Error("User document not found");
 
-    return currentUser.documents[0];
+    return userDocs.documents[0];
   } catch (error) {
-    console.log(error);
+    console.error("Error getting current user:", error);
     return null;
   }
 }
