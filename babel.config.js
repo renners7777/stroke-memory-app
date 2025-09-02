@@ -10,7 +10,7 @@ module.exports = function (api) {
           path: ".env",
         },
       ],
-      "react-native-reanimated/plugin", // NOTE: This must be the last plugin
+      "react-native-worklets/plugin", // NOTE: This must be the last plugin
     ],
   };
 };
