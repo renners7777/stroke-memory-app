@@ -19,8 +19,6 @@ export interface UserDocument extends Models.Document {
   email: string;
   shareable_id: string;
   canCompanionAddTask?: boolean;
-  accountId: string; 
-  username: string; 
 }
 
 // Interface for the message document structure, matching your companion site
@@ -120,9 +118,7 @@ export async function registerNewPatient(email: string, password: string, name: 
       {
         name: name,
         email: email,
-        shareable_id: shareableId,
-        accountId: userId,
-        username: name
+        shareable_id: shareableId
       }
     );
     
@@ -158,15 +154,11 @@ export async function getCurrentUser(): Promise<UserDocument | null> {
     const currentAccount = await getAccount();
     if (!currentAccount) throw new Error("No user account found");
 
-    const userDocs = await databases.listDocuments<UserDocument>(
+    return await databases.getDocument<UserDocument>(
       APPWRITE_DATABASE_ID,
       USERS_COLLECTION_ID,
-      [Query.equal("accountId", currentAccount.$id)]
+      currentAccount.$id
     );
-
-    if (userDocs.documents.length === 0) throw new Error("User document not found");
-
-    return userDocs.documents[0];
   } catch (error) {
     console.error("Error getting current user:", error);
     return null;
