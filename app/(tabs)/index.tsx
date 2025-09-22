@@ -8,7 +8,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { account, databases, UserDocument } from '@/lib/appwrite';
+import { account, APPWRITE_DATABASE_ID, databases, UserDocument, USERS_COLLECTION_ID } from '@/lib/appwrite';
 
 export default function HomeScreen() {
   const [user, setUser] = useState<UserDocument | null>(null);
