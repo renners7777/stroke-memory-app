@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { CompanionSiteStatus } from '@/components/CompanionSiteStatus';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -47,6 +48,7 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
+      <CompanionSiteStatus />
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
