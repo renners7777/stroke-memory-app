@@ -1,13 +1,13 @@
 import { Image } from 'expo-image';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { getCurrentUser, UserDocument } from '@/src/lib/appwrite';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { account, databases, UserDocument } from '@/lib/appwrite';
 
 export default function HomeScreen() {
   const [user, setUser] = useState<UserDocument | null>(null);
@@ -19,10 +19,17 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
+        const currentUser = await account.get();
+        const userData = await databases.getDocument(
+          APPWRITE_DATABASE_ID,
+          USERS_COLLECTION_ID,
+          currentUser.$id
+        );
+        setUser(userData as UserDocument);
       } catch (error) {
         console.error("Failed to fetch user:", error);
+        // Don't throw the error, just log it and set user to null
+        setUser(null);
       } finally {
         setLoading(false);
       }
