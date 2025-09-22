@@ -1,43 +1,49 @@
-import { account } from '@/lib/appwrite';
-import { Stack, useRouter } from 'expo-router';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-// Keep the splash screen visible while we fetch resources
+// Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     async function prepare() {
       try {
-        // Check if we have a valid session
-        const session = await account.getSession('current');
-        console.log('Session status:', session ? 'Active' : 'None');
-        
-        if (!session) {
-          // No valid session, redirect to auth
-          router.replace('/auth');
-        } else {
-          // Valid session, go to home
-          router.replace('/(tabs)');
-        }
+        console.log('App initializing...');
+        // Add any initialization logic here
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Give time for everything to load
       } catch (e) {
-        console.error('Session check failed:', e);
-        // On error, redirect to auth
-        router.replace('/auth');
+        console.error('Initialization error:', e);
       } finally {
-        // Hide splash screen and mark as ready
-        await SplashScreen.hideAsync();
         setIsReady(true);
+        await SplashScreen.hideAsync();
       }
     }
 
     prepare();
-  }, [router]);
+  }, []);
+
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="auth" />
+      </Stack>
+    </ErrorBoundary>
+  );
 
   if (!isReady) {
     return (
