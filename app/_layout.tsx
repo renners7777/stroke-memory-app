@@ -1,25 +1,22 @@
 import { account } from '@/lib/appwrite';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { ErrorBoundary } from '../components/ErrorBoundary';
+import { useEffect } from 'react';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [initialized, setInitialized] = useState(false);
-
   useEffect(() => {
     async function prepare() {
       try {
-        // Try to get the current session
-        await account.get();
+        // Check if we have a valid session
+        await account.getSession('current');
       } catch (e) {
-        // If there's no session, redirect to sign-in
-        router.replace('/sign-in');
+        // No valid session, that's okay
+        console.log('No active session');
       } finally {
-        setInitialized(true);
+        // Hide splash screen
         await SplashScreen.hideAsync();
       }
     }
@@ -28,10 +25,9 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </ErrorBoundary>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+    </Stack>
   );
 }

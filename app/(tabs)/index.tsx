@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
@@ -13,13 +14,25 @@ import { account, APPWRITE_DATABASE_ID, databases, UserDocument, USERS_COLLECTIO
 export default function HomeScreen() {
   const [user, setUser] = useState<UserDocument | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#333333' }, 'background');
   const textColor = useThemeColor({}, 'text');
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const checkAuthAndFetchUser = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
+        // First check if we're authenticated
+        const session = await account.getSession('current');
+        if (!session) {
+          router.replace('/auth');
+          return;
+        }
+
+        // Then get user details
         const currentUser = await account.get();
         const userData = await databases.getDocument(
           APPWRITE_DATABASE_ID,
@@ -29,15 +42,36 @@ export default function HomeScreen() {
         setUser(userData as UserDocument);
       } catch (error) {
         console.error("Failed to fetch user:", error);
-        // Don't throw the error, just log it and set user to null
-        setUser(null);
+        setError(error instanceof Error ? error.message : 'An unknown error occurred');
+        // Redirect to auth if we get a 401
+        if (error instanceof Error && error.message.includes('401')) {
+          router.replace('/auth');
+          return;
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
+    checkAuthAndFetchUser();
   }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={textColor} />
+        <ThemedText>Loading...</ThemedText>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <ThemedText style={styles.errorText}>Error: {error}</ThemedText>
+      </View>
+    );
+  }
 
   return (
     <ParallaxScrollView
@@ -111,5 +145,18 @@ const styles = StyleSheet.create({
   cardDescription: {
     textAlign: 'center',
     color: 'gray',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
   },
 });
